@@ -1,22 +1,21 @@
 {% set name = "ratarmount" %}
-{% set version = "0.15.2" %}
+{% set version = "1.2.0" %}
+{% set python_min = "3.10" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ratarmount-{{ version }}.tar.gz
-  sha256: d49023f6f03f6992c3bd90bb8f93c3d4e2fd9f823481a8381337348baf0e42cc
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: acca4e5803c75f50f94d4c75ead5f44aa4c4661c9e77d50eb25d1876e6f4dec9
   folder: .
-  patches:
-    - remove-rapidgzip.patch
 
 build:
   entry_points:
-    - ratarmount=ratarmount:cli
+    - ratarmount=ratarmount.cli:cli
   script: {{ PYTHON }} -m pip install . -vv
-  number: 1
+  number: 0
   noarch: python
 
 requirements:
@@ -27,15 +26,26 @@ requirements:
     - pip
   run:
     - python >={{ python_min }}
-    - ratarmountcore >=0.7,<0.8
-    - fusepy
-    - indexed_bzip2 >=1.3.1,<2.0
-    - indexed_gzip >=1.6.3,<2.0
-    - indexed_zstd >=1.3.1,<2.0
-    - dataclasses
-    - python-xz >=0.4.0,<0.5
-    - rarfile >=4.0,<5
+    - ratarmountcore >=0.10,<0.11
+    - mfusepy >=3.0,<4.0
+    - rich
+    - rich-argparse
+    # Optional dependencies for ratarmountcore, which should be constrained exactly as ratarmountcore.
+    - indexed_gzip >=1.6.3,<2
+    - indexed_zstd >=1.3.1,<2
+    - rapidgzip >=0.15,<0.16
+    - py7zr >=1.0,<2
     - python-libarchive-c >=5.1,<6
+    - python-xz >=0.4,<0.5
+    - rarfile >=4,<5
+    - pygit2
+    - fsspec
+    # Last update 5 years ago.
+    #- dropboxdrivefs
+    - ipfsspec
+    - s3fs
+    - smbprotocol
+    - webdav4
 
 test:
   imports:
@@ -43,6 +53,7 @@ test:
   commands:
     - pip check
     - ratarmount --help
+    - ratarmount --version
   requires:
     - pip
     - python {{ python_min }}
